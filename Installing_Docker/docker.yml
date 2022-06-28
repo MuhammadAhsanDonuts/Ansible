@@ -1,0 +1,30 @@
+---
+ - name: "Installig Docker For Ubuntu/Linux"
+   hosts: play-server
+   become: true
+
+   tasks:
+      - name: "Installing Docker Dependencies"
+        shell: apt-get install \ ca-certificates \ curl \ gnupg \ lsb-release
+
+      - name: "Making Directory"
+        ansible.builtin.shell: mkdir -p /etc/apt/keyrings
+
+      - name: "Downloading Packages"
+        ansible.builtin.shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg
+
+      - name: "Creating Additional Directories"
+        ansible.builtin.shell: gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+      - name: "Echoing Command to Ensuring Availability"
+        ansible.builtin.shell: echo \ "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \ $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >>
+      - name: "Updating Cache"
+        apt: update_cache=yes state=present
+
+      - name: "Installing Docker"
+        shell: apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+      - name: "Starting Docker Service"
+        service:
+         name: docker
+         state: start
