@@ -19,7 +19,7 @@
 ## Install
 
 ```sh
-npm install
+You just need to have Ansible Installed to run playbook - Just change the host according to your requirements in playbook.
 ```
 
 ## Usage
@@ -28,19 +28,13 @@ npm install
 ansible-playbook docker.yml
 ```
 
-## Run tests
-
-```sh
-npm run test
-```
-
 ## Author
 
 👤 **Ahsan Shaikh **
 
 * Website: https://prismatic-tapioca-ed2a43.netlify.app/
 * GitHub: [@MuhammadAhsanDonuts](https://github.com/MuhammadAhsanDonuts)
-* LinkedIn: [@Ahsan Shaikh](https://linkedin.com/in/Ahsan Shaikh)
+* LinkedIn: [@Ahsan Shaikh](https://www.linkedin.com/in/ahsan-shaikh-974b2b197/)
 
 ## 🤝 Contributing
 
