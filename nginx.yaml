@@ -1,0 +1,9 @@
+---
+- name: Installing Nginx
+  hosts: vagrants
+  become: yes
+  tasks:   
+   - name: Installing Nginx
+     apt:
+       name: nginx
+       state: present

@@ -1,0 +1,156 @@
+---
+- name: Installing LAMP Stack
+  hosts: vagrants
+  vars:
+    root_user: root
+    mysql_user: shahrukh
+    mysql_password: shahrukh@123
+    db_name: wordpress
+    unix_socket: /var/run/mysqld/mysqld.sock
+  become: yes
+  tasks:
+
+   - apt: update_cache=yes
+
+   - name: Installing Apache2
+     apt:
+       name: apache2
+       state: present
+
+   - name: Installing Software Common Properties
+     apt: 
+       name: software-properties-common
+
+   - name: Adding Ondrej PPA
+     apt_repository: 
+       repo: ppa:ondrej/php
+       update_cache: yes 
+
+   - name: Installing PHP 7.4
+     apt:
+       name: php7.4
+       state: present
+
+   - name: Installing require PHP Packages
+     apt:
+       pkg:
+         - libapache2-mod-php7.4
+         - php7.4-common
+         - php7.4-curl
+         - php7.4-mbstring
+         - php7.4-xmlrpc
+         - php7.4-mysql
+         - php7.4-mysqlnd
+         - php7.4-opcache
+         - php7.4-dev
+         - php7.4-gd
+         - php7.4-xml
+         - php7.4-intl
+         - php7.4-ldap
+         - php7.4-imagick
+         - php7.4-json 
+         - php7.4-cli
+         - php7.4-json
+         - php7.4-zip
+         - php7.4-bcmath 
+         - php7.4-fpm
+         - php7.4-soap
+         - php7.4-json
+         - php7.4-gmp
+         - php7.4-dom
+         - php7.4-mcrypt
+         - php7.4-iconv
+         - php7.4-xsl
+         - php7.4-ctype
+         - php7.4-pdo
+         - php7.4-bz2
+         - php7.4-calendar
+         - php7.4-fileinfo
+         - php7.4-tokenizer
+         - php7.4-xmlwriter
+         - php7.4-xmlreader
+         - php7.4-phar
+       state: present
+
+   - name: Enabling Apache Module for FASTCGI
+     apache2_module:
+        name: "{{ item }}"
+        state: present
+     with_items:
+          - actions
+          - alias
+          - proxy_fcgi
+          - rewrite
+     notify: Check Status of Apache2
+
+   - name: Adding public key MySQL from ubuntu server
+     apt_key:
+        keyserver: keyserver.ubuntu.com
+        id: 467B942D3A79BD29
+
+   - name: Adding MySQL 5.7 apt repository
+     apt_repository:
+        repo: 'deb http://repo.mysql.com/apt/ubuntu bionic mysql-5.7'
+        state: present
+        update_cache: yes
+
+   - name: Installing MYSQL client 5.7
+     apt:
+        name: mysql-client=5.7*
+        state: present
+
+   - name: Installing mysql server 5.7
+     apt:
+        name: mysql-server=5.7*
+        state: present
+
+   - name: Installing pip 
+     apt:
+        name: python3-pip
+        state: present
+
+   - name: Making sure pymysql is present
+     pip:
+        name: pymysql
+        state: present
+
+   - name: Setting up MySQL root password
+     mysql_user:
+          login_host: 'localhost'
+          login_user: '{{ root_user }}'
+          login_unix_socket: '{{ unix_socket }}'
+          login_password: "{{ mysql_password }}"
+          name: '{{ root_user }}'
+          password: "{{ mysql_password }}"
+          state: present
+          priv: '*.*:ALL,GRANT'
+
+   - name: Setting up MySQL user password
+     mysql_user:
+          name: '{{ mysql_user }}'
+          password: "{{ mysql_password }}"
+          host: '%'
+          login_unix_socket: '{{ unix_socket }}'
+          login_user: '{{ root_user }}'
+          login_password: "{{ mysql_password }}"
+          priv: "{{ db_name }}.{{ mysql_user }}:ALL,GRANT"
+
+   - name: Creating a Database for wordpress
+     mysql_db:
+          name: "{{ db_name }}"
+          state: present
+          login_unix_socket: '{{ unix_socket }}'
+          login_user: '{{ root_user }}'
+          login_password: "{{ mysql_password }}"
+
+  #  - name: Setup Virtual Host in Sites Enabled
+  #    template: 
+  #        src: ./index.conf
+  #        dest: /etc/apache2/sites-enabled
+  #        owner: root
+
+  handlers:
+   - name: Check Status of Apache2
+     service: 
+        name: apache2
+        state: restarted  

@@ -1,0 +1,66 @@
+    #  - name: Add the Configuration in Sites-Enabled
+    #    lineinfile:
+    #        path: /etc/nginx/sites-enabled/default
+    #       #  regexp: "^#       deny all;"
+    #        insertafter: "^       # include snippets/snakeoil.conf;"
+    #        line: "        include /etc/nginx/pagespeed.conf;"
+    #        state: present
+    #        backup: yes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #  - name: Copy nginx version in a file
+    #    shell: nginx -v |& grep -oP '/\K.*' > nginx.txt
+    #    args:
+    #       executable: /bin/bash
+
+    #  - name: Remove additional words from nginx version
+    #    shell: sed -i 's/(Ubuntu)//g' nginx.txt 
+    #    args:
+    #       executable: /bin/bash
+
+    #  - name: Add in a register
+    #    shell: cat nginx.txt
+    #    register: ver
+
+    #  - name: Adding temp Environmental variable of Nginx version.
+    #    lineinfile:
+    #       path: "{{ user_bashrc_path }}/.bashrc"
+    #       line: export NG_VER="$(cat nginx.txt)"
+
+    #  - name: Creating an empty file
+    #    file:
+    #       path: "/etc/profile.d/example.sh"
+    #       state: touch
+
+    #  - name: Adding temp Environmental variable of Nginx version in profile
+    #    lineinfile:
+    #       path: "/etc/profile.d/example.sh"
+    #       line: export NG_VER="$(cat nginx.txt)"
+
+    #  - name: Restart Shell
+    #    shell: source ~/.bashrc
+    #    args:
+    #       executable: /bin/bash
+
+    #  - name: Adding temp Environmental variable of Nginx version
+    #    shell: cat nginx.txt > nginxenv.txt
+    #    args:
+    #       executable: /bin/bash
+
+    #  - name: Shell
+    #    environment:
+    #        export: 
+

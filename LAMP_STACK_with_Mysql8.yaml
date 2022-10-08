@@ -1,0 +1,142 @@
+---
+- name: Installing LAMP Stack
+  hosts: vagrants
+  become: true
+  tasks:
+
+   - apt: update_cache=yes
+   
+   - name: Installing Apache2
+     apt:
+       name: apache2
+       state: present
+
+   - name: Installing Software Common Properties
+     apt: 
+       name: software-properties-common
+
+   - name: Adding Ondrej PPA
+     apt_repository: 
+       repo: ppa:ondrej/php
+       update_cache: yes 
+
+   - name: Installing PHP 7.4
+     apt:
+       name: php7.4
+       state: present
+
+   - name: Installing require PHP Packages
+     apt:
+       pkg:
+         - libapache2-mod-php7.4
+         - php7.4-common
+         - php7.4-curl
+         - php7.4-mbstring
+         - php7.4-xmlrpc
+         - php7.4-mysql
+         - php7.4-mysqlnd
+         - php7.4-opcache
+         - php7.4-dev
+         - php7.4-gd
+         - php7.4-xml
+         - php7.4-intl
+         - php7.4-ldap
+         - php7.4-imagick
+         - php7.4-json 
+         - php7.4-cli
+         - php7.4-json
+         - php7.4-zip
+         - php7.4-bcmath 
+         - php7.4-fpm
+         - php7.4-soap
+         - php7.4-json
+         - php7.4-gmp
+         - php7.4-dom
+         - php7.4-mcrypt
+         - php7.4-iconv
+         - php7.4-xsl
+         - php7.4-ctype
+         - php7.4-pdo
+         - php7.4-bz2
+         - php7.4-calendar
+         - php7.4-fileinfo
+         - php7.4-tokenizer
+         - php7.4-xmlwriter
+         - php7.4-xmlreader
+         - php7.4-phar
+       state: present
+
+   - name: Enabling Apache Module for FASTCGI
+     apache2_module:
+        name: "{{ item }}"
+        state: present
+     with_items:
+          - actions
+          - alias
+          - proxy_fcgi
+     notify: Check Status of Apache2
+
+   - name: Downloading MySQL 8.0 Repo
+     get_url:
+        url: https://dev.mysql.com/get/mysql-apt-config_0.8.12-1_all.deb
+        dest: /home/vagrant/
+        # update_cache: yes
+
+   - name: Installing MYSQL Repo
+     apt:
+       deb: /home/vagrant/mysql-apt-config_0.8.12-1_all.deb
+       state: present
+
+
+   - name: Installing Mysql-Server
+     become: yes
+     apt:
+       name: mysql-server
+       state: present
+
+   - name: Installing pip 
+     apt:
+        name: python3-pip
+        state: present
+
+   - name: Making sure pymysql is present
+     pip:
+        name: pymysql
+        state: present
+   
+  #  - name: Creating a Group for a User
+  #    group: 
+  #       name: Shahrukh
+  #       gid: 1002
+  #       state: present
+
+  #  - name: Creating a New User
+  #    user: 
+  #       name: Shahrukh
+  #       state: present
+  #       password: "{{ 'shahrukh@123' | password_hash('sha512') }}"
+  #       group: Shahrukh
+  #       groups: ''
+  #       append: yes
+  #       create_home: true
+  #       home: /home/Shahrukh
+  #       shell: /bin/bash
+  #       uid: 1002
+
+  #  - name: Creating a File in Var WWW
+  #    copy:
+  #       content: |
+  #              <?php phpinfo(); ?>
+  #       dest: /var/www/html/index.php
+
+  #  - name: Setup Virtual Host in Sites Enabled
+  #    template: 
+  #        src: ./index.conf
+  #        dest: /etc/apache2/sites-enabled
+  #        owner: root
+
+  handlers:
+   - name: Check Status of Apache2
+     service: 
+        name: apache2
+        state: restarted  

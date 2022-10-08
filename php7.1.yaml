@@ -1,0 +1,87 @@
+---
+- name: Installing PHP Version 7.1
+  hosts: vagrants
+  become: yes
+  tasks:
+   - apt: update_cache=yes
+   
+   - name: Installing Apache2
+     apt:
+       name: apache2
+       state: present
+
+   - name: Check Status of Apache2
+     service:
+       name: apache2
+       state: started
+
+   - name: Installing Software Common Properties
+     apt: 
+       name: software-properties-common
+
+   - name: Adding Ondrej PPA
+     apt_repository: 
+       repo: ppa:ondrej/php
+       update_cache: yes 
+
+   - name: Installing PHP 7.1
+     apt:
+       name: php7.1
+       state: present
+
+   - name: Installing require PHP Packages
+     apt:
+       pkg:
+         - libapache2-mod-php7.1
+         - php7.1-common
+         - php7.1-curl
+         - php7.1-mbstring
+         - php7.1-xmlrpc
+         - php7.1-mysql
+         - php7.1-mysqlnd
+         - php7.1-opcache
+         - php7.1-dev
+         - php7.1-gd
+         - php7.1-xml
+         - php7.1-intl
+         - php7.1-ldap
+         - php7.1-imagick
+         - php7.1-cli
+         - php7.1-zip
+         - php7.1-bcmath 
+         - php7.1-fpm
+         - php7.1-soap
+         - php7.1-json
+         - php7.1-gmp
+         - php7.1-dom
+         - php7.1-mcrypt
+         - php7.1-iconv
+         - php7.1-xsl
+         - php7.1-ctype
+         - php7.1-pdo
+         - php7.1-bz2
+         - php7.1-calendar
+         - php7.1-fileinfo
+         - php7.1-tokenizer
+         - php7.1-xmlwriter
+         - php7.1-xmlreader
+         - php7.1-phar
+       state: present
+
+   - name: Enabling Apache Module for FASTCGI
+     apache2_module:
+        name: "{{ item }}"
+        state: present
+     with_items:
+          - actions
+          - alias
+          - proxy_fcgi
+          - rewrite
+     notify: 
+          - Check Status of Apache2
+
+  handlers:
+   - name: Check Status of Apache2
+     service: 
+        name: apache2
+        state: restarted  
