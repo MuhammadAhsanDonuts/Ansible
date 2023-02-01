@@ -1,12 +1,13 @@
 ---
 - name: Installing MySQL 5.7
-  hosts: vagrants
+  hosts: aws
   vars:
     root_user: root
-    mysql_user: shahrukh
-    mysql_password: shahrukh@123
-    db_name: wordpress
-    unix_socket: /var/run/mysqld/mysqld.sock  
+    root_password: shahrukh@123
+    mysql_user: bimex
+    mysql_password: bimex@123
+    db_name: bimex
+    unix_socket: /var/run/mysqld/mysqld.sock 
   become: true
   tasks:
    - apt: update_cache=yes
@@ -30,11 +31,10 @@
      apt:
         name: mysql-server=5.7*
         state: present
-        
    - name: Installing pip 
      apt:
-        name: python3-pip
-        state: present
+         name: python3-pip
+         state: present
 
    - name: Making sure pymysql is present
      pip:
@@ -43,29 +43,29 @@
 
    - name: Setting up MySQL root password
      mysql_user:
-          login_host: 'localhost'
-          login_user: '{{ root_user }}'
-          login_unix_socket: '{{ unix_socket }}'
-          login_password: "{{ mysql_password }}"
-          name: '{{ root_user }}'
-          password: "{{ mysql_password }}"
-          state: present
-          priv: '*.*:ALL,GRANT'
-         
-   - name: Setting up MySQL user password
-     mysql_user:
-          name: '{{ mysql_user }}'
-          password: "{{ mysql_password }}"
-          host: '%'
-          login_unix_socket: '{{ unix_socket }}'
-          login_user: '{{ root_user }}'
-          login_password: "{{ mysql_password }}"
-          priv: "{{ db_name }}.{{ mysql_user }}:ALL,GRANT"
+           login_host: 'localhost'
+           login_user: '{{ root_user }}'
+           login_password: "{{ root_password }}"
+           login_unix_socket: '{{ unix_socket }}'
+           name: '{{ root_user }}'
+           password: "{{ root_password }}"
+           state: present
+           priv: '*.*:ALL,GRANT'
 
-   - name: Creating a Database for wordpress
+   - name: Creating a Database for bimex
      mysql_db:
-          name: "{{ db_name }}"
-          state: present
-          login_unix_socket: '{{ unix_socket }}'
-          login_user: '{{ root_user }}'
-          login_password: "{{ mysql_password }}"
+           name: "{{ db_name }}"
+           state: present
+           login_unix_socket: '{{ unix_socket }}'
+           login_user: '{{ root_user }}'
+           login_password: "{{ root_password }}"
+         
+   - name: Setting up MySQL user & password
+     mysql_user:
+           name: '{{ mysql_user }}'
+           password: "{{ mysql_password }}"
+           host: '%'
+           login_unix_socket: '{{ unix_socket }}'
+           login_user: '{{ root_user }}'
+           login_password: "{{ root_password }}"
+           priv: "{{ db_name }}.{{ mysql_user }}:ALL,GRANT"
