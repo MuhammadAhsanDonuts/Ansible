@@ -15,6 +15,6 @@
          executable: /bin/bash
 
     - name: Installing Node
-      shell: source ~/.nvm/nvm.sh && nvm install {{ version }}
+      shell: source ~/.nvm/nvm.sh && source ~/.bashrc && nvm install {{ version }}
       args:
         executable: /bin/bash
